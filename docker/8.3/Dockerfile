@@ -51,6 +51,15 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+
+RUN apt-get update && apt-get install -y \
+    librdkafka-dev \
+    pkg-config \
+    libssl-dev \
+    && pecl install rdkafka \
+    && echo "extension=rdkafka.so" >> /etc/php/8.3/cli/php.ini
+
+
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.3
 
 RUN groupadd --force -g $WWWGROUP sail
