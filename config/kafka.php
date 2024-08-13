@@ -12,7 +12,7 @@ return [
     'securityProtocol' =>  env('KAFKA_SECURITY_PROTOCOL', 'PLAINTEXT'),
 
     /*
-     | Default sasl configuration 
+     | Default sasl configuration
      */
     'sasl' => [
         'mechanisms' => env('KAFKA_MECHANISMS', 'PLAINTEXT'),
@@ -74,4 +74,7 @@ return [
      | The cache driver that will be used
      */
     'cache_driver' => env('KAFKA_CACHE_DRIVER', env('CACHE_DRIVER', 'file')),
+
+
+    'topic' => env('KAFKA_TOPIC', ''),
 ];

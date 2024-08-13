@@ -16,7 +16,8 @@ class TestTopicConsumer extends Command
 
     public function handle(): void
     {
-        $consumer = Kafka::consumer(['test-topic'])
+        $consumer = Kafka::consumer()
+            ->subscribe([config('kafka.topic')])
             ->withAutoCommit()
             ->withHandler(new TestHandler())
             ->build();

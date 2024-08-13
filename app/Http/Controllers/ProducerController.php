@@ -2,27 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use Junges\Kafka\Facades\Kafka;
-use Junges\Kafka\Producers\Builder;
+use App\DTO\KafkaProducerDTO;
+use App\Services\KafkaProducerService;
 
 class ProducerController
 {
     /**
      * @throws \Exception
      */
-    public function __invoke()
+    public function test(KafkaProducerService $producerService, KafkaProducerDTO $dto)
     {
-        /** @var Builder $producer */
-        $producer = Kafka::publish()
-            ->onTopic('test-topic')
-            ->withBodyKey('foo', 'bar')
-            ->withHeaders([
-                'foo-header' => 'foo-value'
-            ])
-            ->withDebugEnabled();
+        $events = [];
 
-        $producer->send();
+        for ($i = 1; $i <= 10000; $i++) {
+            $accountId = rand(1, 1000);
+            $events[] = [
+                'account_id' => $accountId,
+                'event_id' => $i,
+            ];
+        }
 
-        return response()->json('Message published! 2');
+        $start = microtime(true);
+
+        $dto->topic = config('kafka.topic');
+        foreach ($events as $event) {
+            $dto->key = (string)$event['account_id'];
+            $dto->account_id = $event['account_id'];
+            $dto->event_id = $event['event_id'];
+
+            $producerService->sendEvent($dto);
+        }
+
+        return response()->json(microtime(true) - $start);
     }
 }
