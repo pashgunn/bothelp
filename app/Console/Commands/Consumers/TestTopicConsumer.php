@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands\Consumers;
 
-use App\Handlers\TestHandler;
 use Carbon\Exceptions\Exception;
 use Illuminate\Console\Command;
 use Junges\Kafka\Exceptions\ConsumerException;
@@ -19,7 +18,15 @@ class TestTopicConsumer extends Command
         $consumer = Kafka::consumer()
             ->subscribe([config('kafka.topic')])
             ->withAutoCommit()
-            ->withHandler(new TestHandler())
+            ->withHandler(function ($message) {
+                sleep(1);
+
+                logger()->info('Proceed event', [
+                    'body' => $message->getBody(),
+                    'partition' => $message->getPartition(),
+                    'key' => $message->getKey(),
+                ]);
+            })
             ->build();
 
         try {
